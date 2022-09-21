@@ -1,14 +1,15 @@
-package pageobjects;
+package client;
 
 import io.restassured.response.ValidatableResponse;
+import model.User;
 
 import static io.restassured.RestAssured.given;
 
-public class UserRequests extends RestClient{
-    public ValidatableResponse login(UserLogin userLogin) {
+public class UserClient extends RestClient {
+    public ValidatableResponse login(User user) {
         return given()
                 .spec(getBaseSpec())
-                .body(userLogin)
+                .body(user)
                 .post("/api/auth/login")
                 .then();
     }
@@ -20,10 +21,10 @@ public class UserRequests extends RestClient{
                 .delete("/api/auth/user")
                 .then();
     }
-    public ValidatableResponse create(UserCreate userCreate) {
+    public ValidatableResponse create(User user) {
         return given()
                 .spec(getBaseSpec())
-                .body(userCreate)
+                .body(user)
                 .when()
                 .post("/api/auth/register")
                 .then();

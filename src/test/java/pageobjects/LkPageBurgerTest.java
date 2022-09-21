@@ -1,8 +1,10 @@
 package pageobjects;
 
+import client.UserClient;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,22 +15,22 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 
 public class LkPageBurgerTest {
-    private UserRequests userRequests;
+    private UserClient userClient;
     private WebDriver driver;
     private LKPageBurger objLKPage;
     private AuthorizationPageBurger objAuthorizationPage;
 
     @Before
     public void testCreateOrder() {
-        userRequests = new UserRequests();
+        userClient = new UserClient();
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.get("https://stellarburgers.nomoreparties.site/");
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         objAuthorizationPage = new AuthorizationPageBurger(driver);
         objLKPage = new LKPageBurger(driver);
-        UserCreate userCreate = new UserCreate("Hardkones@yandex.ru", "123456", "Senya");
-        userRequests.create(userCreate);
+        User user = new User("Hardkones@yandex.ru", "123456", "Senya");
+        userClient.create(user);
         objAuthorizationPage.authorizationByLKLink("Hardkones@yandex.ru", "123456");
     }
     @Test
@@ -60,10 +62,10 @@ public class LkPageBurgerTest {
     }
     @After
     public void tearDown() {
-        UserLogin userLogin = new UserLogin("Hardkones@yandex.ru", "123456");
-        ValidatableResponse response = userRequests.login(userLogin);
+        User user = new User("Hardkones@yandex.ru", "123456");
+        ValidatableResponse response = userClient.login(user);
         String accessToken = response.extract().path("accessToken");
-        userRequests.delete(accessToken);
+        userClient.delete(accessToken);
         driver.quit();
     }
 }
